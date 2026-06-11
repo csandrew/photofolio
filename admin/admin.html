@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Manage Gallery | James Mwangi Photography</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* ============================================
+           ADMIN PANEL STYLES - STANDALONE
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1a1a2e;
+            --secondary: #16213e;
+            --accent: #e2a63b;
+            --accent-dark: #c48a2a;
+            --white: #ffffff;
+            --dark: #0f0f1a;
+            --gray-light: #f5f5f5;
+            --gray-medium: #e0e0e0;
+            --text-muted: #888;
+            --whatsapp: #25D366;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background-color: var(--gray-light);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 10px 24px;
+            text-decoration: none;
+            border-radius: 30px;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            border: 2px solid var(--accent);
+            color: var(--accent);
+            background: transparent;
+        }
+
+        .btn-outline:hover {
+            background-color: var(--accent);
+            color: var(--primary);
+        }
+
+        /* Admin Container */
+        .admin-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+
+        .admin-header {
+            background: var(--dark);
+            color: var(--white);
+            padding: 1.5rem 0;
+            margin-bottom: 2rem;
+            border-bottom: 3px solid var(--accent);
+        }
+
+        .admin-header h1 {
+            font-size: 1.8rem;
+        }
+
+        .admin-header h1 i {
+            color: var(--accent);
+            margin-right: 10px;
+        }
+
+        .upload-form {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border: 1px solid var(--gray-medium);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .upload-form h3 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 1.4rem;
+        }
+
+        .upload-form h3 i {
+            color: var(--accent);
+            margin-right: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .form-group label i {
+            color: var(--accent);
+            width: 24px;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--gray-medium);
+            border-radius: 8px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .form-group small {
+            display: block;
+            margin-top: 0.25rem;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+
+        .gallery-manager {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+            border: 1px solid var(--gray-medium);
+        }
+
+        .gallery-manager h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .gallery-manager h3 i {
+            color: var(--accent);
+            margin-right: 8px;
+        }
+
+        .admin-gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .admin-image-card {
+            background: var(--white);
+            border: 1px solid var(--gray-medium);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .admin-image-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .admin-image-card img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+        }
+
+        .admin-image-info {
+            padding: 0.75rem;
+            font-size: 0.8rem;
+            background: var(--white);
+        }
+
+        .admin-image-info strong {
+            display: block;
+            color: var(--accent);
+            text-transform: capitalize;
+            margin-bottom: 4px;
+        }
+
+        .admin-image-info small {
+            color: var(--text-muted);
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: transform 0.2s, background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .delete-btn:hover {
+            background: #c82333;
+            transform: scale(1.05);
+        }
+
+        .status-msg {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        .login-form {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 2rem;
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .login-form h2 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .login-form h2 i {
+            color: var(--accent);
+            margin-right: 8px;
+        }
+
+        .login-form p {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 1.5rem 0;
+        }
+
+        .filter-buttons .filter-btn {
+            background: var(--gray-light);
+            border: none;
+            padding: 8px 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+        }
+
+        .filter-buttons .filter-btn i {
+            margin-right: 6px;
+        }
+
+        .filter-buttons .filter-btn.active,
+        .filter-buttons .filter-btn:hover {
+            background: var(--accent);
+            color: var(--primary);
+        }
+
+        .logout-btn {
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .stats-badge {
+            display: inline-block;
+            background: var(--accent);
+            color: var(--primary);
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+
+        hr {
+            margin: 1rem 0;
+            border: none;
+            border-top: 1px solid var(--gray-medium);
+        }
+    </style>
+</head>
+<body>
+
+<!-- Login Section -->
+<div id="loginSection" class="login-form">
+    <h2><i class="fas fa-lock"></i> Admin Login</h2>
+    <p>Enter password to manage gallery</p>
+    <form id="loginForm">
+        <div class="form-group">
+            <label><i class="fas fa-key"></i> Password</label>
+            <input type="password" id="adminPassword" placeholder="Enter admin password" required>
+        </div>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-sign-in-alt"></i> Login</button>
+    </form>
+</div>
+
+<!-- Admin Section -->
+<div id="adminSection" class="hidden">
+    <div class="admin-header">
+        <div class="container">
+            <h1><i class="fas fa-camera-retro"></i> Gallery Admin Panel</h1>
+            <p><i class="fas fa-edit"></i> Add, manage, or delete photos from your portfolio</p>
+        </div>
+    </div>
+
+    <div class="admin-container">
+        <div id="statusMsg"></div>
+
+        <!-- Upload Form -->
+        <div class="upload-form">
+            <h3><i class="fas fa-plus-circle"></i> Add New Photo</h3>
+            <form id="uploadForm">
+                <div class="form-group">
+                    <label><i class="fas fa-image"></i> Image URL</label>
+                    <input type="url" id="imageUrl" placeholder="https://example.com/your-photo.jpg" required>
+                    <small><i class="fas fa-info-circle"></i> Tip: Use free image hosting like Cloudinary, ImgBB, or upload to your server</small>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-tag"></i> Category</label>
+                    <select id="category" required>
+                        <option value="weddings">Weddings</option>
+                        <option value="portraits">Portraits</option>
+                        <option value="events">Events</option>
+                        <option value="corporate">Corporate</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-paragraph"></i> Alt Text (for SEO)</label>
+                    <input type="text" id="altText" placeholder="Describe the photo...">
+                </div>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-upload"></i> Add to Gallery</button>
+            </form>
+        </div>
+
+        <!-- Gallery Manager -->
+        <div class="gallery-manager">
+            <h3><i class="fas fa-photo-video"></i> Manage Gallery <span id="photoCount" class="stats-badge">0</span></h3>
+            
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter-manager="all"><i class="fas fa-th-large"></i> All</button>
+                <button class="filter-btn" data-filter-manager="weddings"><i class="fas fa-heart"></i> Weddings</button>
+                <button class="filter-btn" data-filter-manager="portraits"><i class="fas fa-user"></i> Portraits</button>
+                <button class="filter-btn" data-filter-manager="events"><i class="fas fa-calendar-alt"></i> Events</button>
+                <button class="filter-btn" data-filter-manager="corporate"><i class="fas fa-building"></i> Corporate</button>
+            </div>
+            
+            <div id="adminGalleryGrid" class="admin-gallery-grid">
+                <!-- Gallery items loaded here -->
+            </div>
+            
+            <div class="logout-btn">
+                <button id="logoutBtn" class="btn btn-outline"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ============================================
+    // ADMIN PANEL - STANDALONE JAVASCRIPT
+    // Gallery Management with localStorage
+    // ============================================
+
+    const ADMIN_PASSWORD = "photo2026"; // Change this in production
+
+    // Load gallery from localStorage or initialize with sample data
+    function loadGallery() {
+        const stored = localStorage.getItem('photography_gallery');
+        if (stored) {
+            return JSON.parse(stored);
+        }
+        // Default sample gallery
+        const defaultGallery = [
+            { id: Date.now() + 1, src: 'https://images.pexels.com/photos/2253870/pexels-photo-2253870.jpeg?auto=compress&cs=tinysrgb&w=600', category: 'weddings', alt: 'Wedding couple embracing at sunset' },
+            { id: Date.now() + 2, src: 'https://images.pexels.com/photos/1024993/pexels-photo-1024993.jpeg?auto=compress&cs=tinysrgb&w=600', category: 'weddings', alt: 'Wedding ceremony with flower arch' },
+            { id: Date.now() + 3, src: 'https://images.pexels.com/photos/1576449/pexels-photo-1576449.jpeg?auto=compress&cs=tinysrgb&w=600', category: 'portraits', alt: 'Professional business headshot' },
+            { id: Date.now() + 4, src: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=600', category: 'portraits', alt: 'Creative outdoor portrait' },
+            { id: Date.now() + 5, src: 'https://images.pexels.com/photos/2774556/pexels-photo-2774556.jpeg?auto=compress&cs=tinysrgb&w=600', category: 'events', alt: 'Corporate gala event photography' },
+            { id: Date.now() + 6, src: 'https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?auto=compress&cs=tinysrgb&w=600', category: 'events', alt: 'Music concert crowd shot' },
+            { id: Date.now() + 7, src: 'https://images.pexels.com/photos/3184419/pexels-photo-3184419.jpeg?auto=compress&cs=tinysrgb&w=600', category: 'corporate', alt: 'Team corporate headshots' },
+            { id: Date.now() + 8, src: 'https://images.pexels.com/photos/3184459/pexels-photo-3184459.jpeg?auto=compress&cs=tinysrgb&w=600', category: 'corporate', alt: 'Conference keynote speaker' },
+        ];
+        localStorage.setItem('photography_gallery', JSON.stringify(defaultGallery));
+        return defaultGallery;
+    }
+
+    // Save gallery to localStorage
+    function saveGallery(gallery) {
+        localStorage.setItem('photography_gallery', JSON.stringify(gallery));
+        window.dispatchEvent(new Event('storage'));
+    }
+
+    // Get current active filter
+    function getCurrentFilter() {
+        const activeBtn = document.querySelector('.filter-btn.active[data-filter-manager]');
+        return activeBtn ? activeBtn.dataset.filterManager : 'all';
+    }
+
+    // Show status message
+    function showStatus(msg, type) {
+        const statusDiv = document.getElementById('statusMsg');
+        if (!statusDiv) return;
+        statusDiv.innerHTML = `<div class="status-msg status-${type}"><i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle'}"></i> ${msg}</div>`;
+        setTimeout(() => {
+            statusDiv.innerHTML = '';
+        }, 3000);
+    }
+
+    // Render admin gallery grid
+    function renderAdminGallery(filter = 'all') {
+        const gallery = loadGallery();
+        const filtered = filter === 'all' ? gallery : gallery.filter(img => img.category === filter);
+        const container = document.getElementById('adminGalleryGrid');
+        const photoCountSpan = document.getElementById('photoCount');
+        
+        if (photoCountSpan) {
+            photoCountSpan.textContent = gallery.length;
+        }
+        
+        if (container) {
+            if (filtered.length === 0) {
+                container.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:3rem; color:var(--text-muted);">
+                    <i class="fas fa-folder-open" style="font-size:3rem; margin-bottom:1rem; display:block;"></i>
+                    No photos in this category. Add some!
+                </div>`;
+                return;
+            }
+            
+            container.innerHTML = filtered.map(img => `
+                <div class="admin-image-card" data-id="${img.id}">
+                    <img src="${img.src}" alt="${img.alt}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x300?text=Image+Not+Found'">
+                    <button class="delete-btn" onclick="deletePhoto(${img.id})" title="Delete photo"><i class="fas fa-trash-alt"></i></button>
+                    <div class="admin-image-info">
+                        <strong><i class="fas fa-tag"></i> ${img.category}</strong>
+                        <small><i class="fas fa-comment"></i> ${img.alt.substring(0, 40)}${img.alt.length > 40 ? '...' : ''}</small>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+
+    // Delete photo function
+    window.deletePhoto = function(id) {
+        if (confirm('⚠️ Delete this photo permanently? This action cannot be undone.')) {
+            let gallery = loadGallery();
+            gallery = gallery.filter(img => img.id !== id);
+            saveGallery(gallery);
+            renderAdminGallery(getCurrentFilter());
+            showStatus('Photo deleted successfully', 'success');
+        }
+    };
+
+    // Setup filter buttons for admin panel
+    function setupAdminFilters() {
+        const filterBtns = document.querySelectorAll('[data-filter-manager]');
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const filter = btn.dataset.filterManager;
+                renderAdminGallery(filter);
+            });
+        });
+    }
+
+    // Handle upload form submission
+    function setupUploadForm() {
+        const uploadForm = document.getElementById('uploadForm');
+        if (!uploadForm) return;
+        
+        uploadForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const imageUrl = document.getElementById('imageUrl').value.trim();
+            const category = document.getElementById('category').value;
+            const altText = document.getElementById('altText').value.trim() || `${category} photography by James Mwangi`;
+            
+            if (!imageUrl) {
+                showStatus('Please enter an image URL', 'error');
+                return;
+            }
+            
+            if (!imageUrl.startsWith('http://') && !imageUrl.startsWith('https://')) {
+                showStatus('Please enter a valid URL starting with http:// or https://', 'error');
+                return;
+            }
+            
+            const gallery = loadGallery();
+            const newPhoto = {
+                id: Date.now(),
+                src: imageUrl,
+                category: category,
+                alt: altText
+            };
+            
+            gallery.unshift(newPhoto);
+            saveGallery(gallery);
+            renderAdminGallery(getCurrentFilter());
+            
+            document.getElementById('uploadForm').reset();
+            showStatus('<i class="fas fa-check"></i> Photo added successfully!', 'success');
+        });
+    }
+
+    // Login logic
+    function setupLogin() {
+        const loginForm = document.getElementById('loginForm');
+        if (!loginForm) return;
+        
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const password = document.getElementById('adminPassword').value;
+            
+            if (password === ADMIN_PASSWORD) {
+                sessionStorage.setItem('admin_logged_in', 'true');
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('adminSection').classList.remove('hidden');
+                renderAdminGallery('all');
+                setupAdminFilters();
+                setupUploadForm();
+                showStatus('Welcome back, James!', 'success');
+            } else {
+                showStatus('Incorrect password. Access denied.', 'error');
+                document.getElementById('adminPassword').value = '';
+            }
+        });
+    }
+
+    // Logout logic
+    function setupLogout() {
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+                sessionStorage.removeItem('admin_logged_in');
+                document.getElementById('loginSection').style.display = 'block';
+                document.getElementById('adminSection').classList.add('hidden');
+                document.getElementById('adminPassword').value = '';
+                showStatus('Logged out successfully', 'success');
+            });
+        }
+    }
+
+    // Check session on page load
+    function checkSession() {
+        if (sessionStorage.getItem('admin_logged_in') === 'true') {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('adminSection').classList.remove('hidden');
+            renderAdminGallery('all');
+            setupAdminFilters();
+            setupUploadForm();
+        }
+    }
+
+    // Sync with main site gallery when storage changes
+    function syncWithMainSite() {
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'photography_gallery') {
+                if (document.getElementById('adminSection') && !document.getElementById('adminSection').classList.contains('hidden')) {
+                    renderAdminGallery(getCurrentFilter());
+                }
+            }
+        });
+    }
+
+    // Initialize everything
+    function init() {
+        setupLogin();
+        setupLogout();
+        checkSession();
+        syncWithMainSite();
+    }
+    
+    init();
+</script>
+</body>
+</html>
